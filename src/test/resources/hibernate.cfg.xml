@@ -34,6 +34,9 @@
         <!-- Drop and re-create the database schema on startup -->
         <property name="hbm2ddl.auto">create</property>
         <property name="hibernate.connection.provider_class">org.hibernate.hikaricp.internal.HikariCPConnectionProvider</property>
+        <property name="hibernate.connection.autocommit">false</property>
+        <property name="hibernate.transaction.coordinator_class">jdbc</property>
+        <property name="hibernate.transaction.auto_close_session">false</property>
         <!-- Names the annotated entity class -->
         <mapping class="org.hibernate.tutorial.annotations.Event"/>
 

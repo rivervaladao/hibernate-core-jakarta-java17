@@ -39,15 +39,4 @@ public class SessionUtil {
         if(session != null && session.isOpen())
             currentSession.set(null);
     }
-    static public void getTransaction(){
-        if(getSession()!= null && getSession())
-    }
-    static public void doWithTransaction(){
-        try(Session session = getSession()) {
-        }catch (Exception e){
-
-        }finally {
-            closeSession();
-        }
-    }
-}
+ }

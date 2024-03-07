@@ -8,21 +8,6 @@ import java.util.function.Consumer;
 
 public class TransactionUtil {
     private static final ThreadLocal<Transaction> transaction = new ThreadLocal<>();
-    public void doInTransaction(Consumer<Session> session) {
-        if(transaction.get() != null && transaction.get().is)
-            return transaction.get();
-        try {
-            transaction = session.beginTransaction();
-            transactionalCode.run(session);
-            transaction.commit();
-        } catch (Exception e) {
-            if (transaction != null) transaction.rollback();
-            throw new RuntimeException("Error in transaction", e);
-        } finally {
-            session.close();
-        }
-    }
-
     public static void doWithTransaction(Consumer<Session> command) {
         boolean isTransacaoFoiAbertaAqui = false;
 
@@ -43,16 +28,28 @@ public class TransactionUtil {
 
         } catch(Exception e) {
             TransactionUtil.rollbackCurrentTransaction();
+            System.out.println(e.getMessage());
         }
     }
 
+    private static void rollbackCurrentTransaction() {
+        if(transaction.get() != null) transaction.get().rollback();
+    }
+
+    private static void commitCurrentTransaction() {
+        if(transaction.get()!=null) transaction.get().commit();;
+        transaction.set(null);
+    }
+
     private static void beginCurrentTransaction() {
-        if(transaction.get() != null)
-            transaction.get().begin();
+        if(transaction.get() == null) {
+            transaction.set(getCurrentSession().getTransaction());
+        }
+        transaction.get().begin();
     }
 
     private static boolean isTransacaoAberta() {
-        return transaction.get() != null && transaction.get().isActive();
+        return transaction.get() != null;
     }
 
     private static Session getCurrentSession() {
